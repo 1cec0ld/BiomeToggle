@@ -1,0 +1,10 @@
+main: com.gmail.ak1cec0ld.plugins.testplugin.TestPlugin
+name: TP
+api-version: 1.13
+version: 1.0.0
+author: 1cec0ld
+description: No Description Needed
+prefix: TP
+commands:
+  btoggle:
+    description: Does things
