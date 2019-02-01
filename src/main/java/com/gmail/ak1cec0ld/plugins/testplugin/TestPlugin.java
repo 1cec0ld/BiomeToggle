@@ -17,7 +17,7 @@ import java.util.HashMap;
 import static org.bukkit.Bukkit.createBlockData;
 
 public class TestPlugin extends JavaPlugin implements CommandExecutor {
-    private HashMap<String, Integer> map = new HashMap<>();
+    private HashMap<String, Integer> activeToggles = new HashMap<>();
 
     public void onEnable(){
         Bukkit.getLogger().info("Enabling TestPlugin");
@@ -29,16 +29,16 @@ public class TestPlugin extends JavaPlugin implements CommandExecutor {
         if((sender instanceof Player)){
             if(args.length == 0){
                 Player player = (Player)sender;
-                if(map.containsKey(player.getName())){
-                    Bukkit.getScheduler().cancelTask(map.get(player.getName()));
-                    map.remove(player.getName());
+                if(activeToggles.containsKey(player.getName())){
+                    Bukkit.getScheduler().cancelTask(activeToggles.get(player.getName()));
+                    activeToggles.remove(player.getName());
                     player.sendMessage("Stopping biome outlining task!");
                     return true;
                 }
                 int output = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
                     doOutlines(player);
                 }, 10, 40);
-                map.put(player.getName(),output);
+                activeToggles.put(player.getName(),output);
                 player.sendMessage("Starting biome outlining task!");
                 return true;
             }
@@ -46,6 +46,12 @@ public class TestPlugin extends JavaPlugin implements CommandExecutor {
         return false;
     }
     public void doOutlines(Player player){
+        if(player==null){
+            for(int eachActive : activeToggles.values()){
+                Bukkit.getScheduler().cancelTask(eachActive);
+            }
+            activeToggles.clear();
+        }
         BlockData bd = createBlockData(Material.GLOWSTONE);
         int currentX = player.getLocation().getBlockX();
         int currentZ = player.getLocation().getBlockZ();
@@ -62,4 +68,12 @@ public class TestPlugin extends JavaPlugin implements CommandExecutor {
             }
         }
     }
+/*
+get all biomes in radius
+assign them a block in existing set
+use that MAP to create borders
+
+
+
+ */
 }
